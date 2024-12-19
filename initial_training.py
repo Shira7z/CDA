@@ -85,8 +85,8 @@ true_batch_size = 16
 accumulation_steps = 8
 
 # Create train and validation datasets and data loaders
-dataset_train = DogHeartDataset('../../data/Dog_Heart_VHS_com/Train', get_transform(resized_image_size))
-dataset_valid = DogHeartDataset('../../data/Dog_Heart_VHS_com/Valid', get_transform(resized_image_size))
+dataset_train = DogHeartDataset('path/to/augmentation_dataset/Train', get_transform(resized_image_size))
+dataset_valid = DogHeartDataset('path/to/origianl_dataset/Valid', get_transform(resized_image_size))
 train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=true_batch_size // accumulation_steps, shuffle=True) 
 valid_loader = torch.utils.data.DataLoader(dataset_valid, batch_size=8, shuffle=False)
 
@@ -109,7 +109,7 @@ class DogHeartTestDataset(torch.utils.data.Dataset):
         return len(self.imgs)
 
 # Instantiate test dataset and data loader
-test_dataset = DogHeartTestDataset('../../data/Dog_Heart_VHS_com/Test_Images', get_transform(resized_image_size))
+test_dataset = DogHeartTestDataset('path/to/original_dataset/Test_Images', get_transform(resized_image_size))
 test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
 
 # Define a function to calculate VHS from model outputs
