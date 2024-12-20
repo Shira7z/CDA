@@ -44,11 +44,17 @@ The figure below illustrates the comparison between high-confidence and low-conf
 - **Top Row (Low-Confidence Predictions):** These predictions have higher uncertainty values, leading to inaccurate key point alignment and less reliable Vertebral Heart Score (VHS) estimations.
 - **Bottom Row (High-Confidence Predictions):** These predictions show well-aligned key points and consistent VHS calculations, as their uncertainty values fall below the confidence threshold.
 
-This distinction is achieved using Monte Carlo (MC) Dropout, which enables uncertainty estimation by performing multiple stochastic forward passes through the model during inference.
+This distinction is achieved using Monte Carlo (MC) Dropout, which enables uncertainty estimation by performing multiple stochastic forward passes through the model during inference. By filtering out low-confidence predictions using a threshold (uncertainty < 0.005), the model ensures only reliable data is incorporated into the training process.
 
 ---
 
 ## Results
+
+The Confident Pseudo-labeled Diffusion Augmentation (CDA) model demonstrates state-of-the-art performance in predicting Vertebral Heart Score (VHS) and classifying canine cardiomegaly. 
+
+### Performance Comparisons
+Our model achieves a test accuracy of **92.8%**, outperforming several baseline models, as shown in the table below:
+
 
 | Model                     | Valid Acc (%) | Test Acc (%) |
 |---------------------------|---------------|--------------|
@@ -58,7 +64,17 @@ This distinction is achieved using Monte Carlo (MC) Dropout, which enables uncer
 | **CDA w/o Pseudo-labels** | 88.5          | 91.0         |
 | **CDA**                   | **89.5**      | **92.8**     |
 
+The CDA model's integration of pseudo-labeling with Monte Carlo Dropout and diffusion-based synthetic data augmentation contributes significantly to these performance improvements.
+
+### Visual Comparison of Predictions
+The figure below illustrates a visual comparison of key point predictions made by CDA and other state-of-the-art models.
+
 ![Prediction Comparisons](images/results_comparision.png)
+
+- **Key Points (CDA in Red):** The CDA model accurately aligns the predicted key points (red) with the ground truth (blue), achieving precise VHS predictions.
+- **Baseline Models:** Other models show varying levels of deviation, particularly in key point alignment and VHS estimation.
+
+These results demonstrate the robustness and reliability of the CDA model for VHS prediction and cardiomegaly classification. The integration of pseudo-labeling and synthetic data augmentation significantly enhances model accuracy and generalizability, setting a new benchmark for veterinary diagnostics.
 
 ---
 
