@@ -3,5 +3,6 @@ torchvision>=0.9.0
 numpy
 scipy
 pandas
+Pillow
 matplotlib
 tqdm
