@@ -19,15 +19,13 @@ def train_with_pseudo_labels(
             loss1 = criterion(outputs, points)
             loss2 = criterion(calc_vhs(outputs), vhs)
             loss = 10 * loss1 + 0.1 * loss2
-            if epoch > 10:
-                soft_points = pred_record[ind].mean(axis=1).to(device)
-                loss3 = criterion(outputs, soft_points)
-                loss += loss3
             loss.backward()
             optimizer.step()
             running_loss += loss.item()
             pred_record[ind, epoch % 10] = outputs.detach().cpu()
-
+            
+        epoch_loss = running_loss / len(train_loader.dataset)
+        
         scheduler.step()
 
         # Generate pseudo-labels
