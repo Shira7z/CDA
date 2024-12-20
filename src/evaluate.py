@@ -38,7 +38,6 @@ def evaluate_model(model, data_loader, device, criterion):
 
     val_loss /= len(data_loader.dataset)
     val_acc = val_correct / len(data_loader.dataset)
-    print(f"Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}")
     return val_loss, val_acc, results
 
 
