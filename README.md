@@ -1,14 +1,64 @@
-# CDA
-## Confident Pseudo-labeled Diffusion Augmentation for Canine Cardiomegaly Detection
+# Confident Pseudo-labeled Diffusion Augmentation for Canine Cardiomegaly Detection
 
-This repository provides the code and framework for detecting canine cardiomegaly using deep learning techniques. The pipeline includes initial training, iterative training with pseudo-labeling, evaluation, and inference.
+## Overview
+
+This repository contains the implementation of the Confident Pseudo-labeled Diffusion Augmentation (CDA) model, a novel approach for detecting canine cardiomegaly. By integrating synthetic data augmentation with diffusion models, high-confidence pseudo-labeling using Monte Carlo (MC) Dropout, and iterative training, the CDA model achieves state-of-the-art accuracy in Vertebral Heart Score (VHS) prediction and canine cardiomegaly classification.
+
+![Overall Framework](images/framework_overview.png)
+
+---
 
 ## Features
 
-- **Initial Training**: Train the model on labeled data to obtain the best initial model.
-- **Iterative Training**: Improve model performance using pseudo-labeling with unlabeled data.
-- **Evaluation**: Evaluate the model's performance on validation or test datasets.
-- **Inference**: Generate predictions for test datasets and save them for analysis.
+- **Synthetic Data Augmentation**: Generates anatomically plausible chest X-rays to address data scarcity.
+- **Pseudo-labeling with Monte Carlo Dropout**: Leverages high-confidence predictions for iterative training.
+- **State-of-the-Art Results**: Achieves 92.8% test accuracy, outperforming existing models.
+  
+---
+
+## VHS Calculation
+
+The model predicts the Vertebral Heart Score (VHS) using key anatomical landmarks identified in the X-ray. These landmarks are used to compute the VHS based on the following formula:
+
+VHS = 6 * (AB + CD) / EF
+
+### Key Points for VHS Calculation
+
+1. **AB**: Long axis of the heart, measured from the carina to the apex.
+2. **CD**: Short axis of the heart, perpendicular to AB at its widest point.
+3. **EF**: Length of the vertebral segment, starting from the fourth thoracic vertebra.
+
+![vhs](images/VHS.png)
+
+---
+
+## High-Confidence vs Low-Confidence Predictions
+
+One of the key features of the Confident Pseudo-labeled Diffusion Augmentation (CDA) model is its ability to differentiate between high-confidence and low-confidence predictions during pseudo-labeling. This ensures only reliable data is incorporated into the training process, improving the model's accuracy and robustness.
+
+The figure below illustrates the comparison between high-confidence and low-confidence predictions:
+
+![Conf Pred](images/Confidence_Prediction.png)
+
+### Explanation:
+- **Top Row (Low-Confidence Predictions):** These predictions have higher uncertainty values, leading to inaccurate key point alignment and less reliable Vertebral Heart Score (VHS) estimations.
+- **Bottom Row (High-Confidence Predictions):** These predictions show well-aligned key points and consistent VHS calculations, as their uncertainty values fall below the confidence threshold.
+
+This distinction is achieved using Monte Carlo (MC) Dropout, which enables uncertainty estimation by performing multiple stochastic forward passes through the model during inference.
+
+---
+
+## Results
+
+| Model                     | Valid Acc (%) | Test Acc (%) |
+|---------------------------|---------------|--------------|
+| ConvNeXt                  | 89.5          | 89.8         |
+| Vim                       | 73.5          | 71.5         |
+| MambaVision               | 87.5          | 86.8         |
+| **CDA w/o Pseudo-labels** | 88.5          | 91.0         |
+| **CDA**                   | **89.5**      | **92.8**     |
+
+![Prediction Comparisons](images/results_comparision.png)
 
 ---
 
