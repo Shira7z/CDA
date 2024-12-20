@@ -38,6 +38,7 @@ def train_initial_model(train_loader, valid_loader, device, num_epochs=1000, lr=
             pred_record[ind, epoch % 10] = outputs.detach().cpu()
 
         scheduler.step()
+        
         epoch_loss = running_loss / len(train_loader.dataset)
         val_loss, val_acc = evaluate_model(model, valid_loader, device, criterion)
 
