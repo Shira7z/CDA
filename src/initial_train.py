@@ -39,7 +39,7 @@ def train_initial_model(train_loader, valid_loader, device, num_epochs=1000, lr=
 
         scheduler.step()
         epoch_loss = running_loss / len(train_loader.dataset)
-        val_loss, val_acc, _ = evaluate_model(model, valid_loader, device, criterion)
+        val_loss, val_acc = evaluate_model(model, valid_loader, device, criterion)
 
         print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {epoch_loss:.4f}, Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
 
