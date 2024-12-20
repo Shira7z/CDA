@@ -10,7 +10,6 @@ def evaluate_model(model, data_loader, device, criterion):
     model.eval()  # Set model to evaluation mode
     val_loss = 0.0
     val_correct = 0
-    results = []
 
     with torch.no_grad():
         for _, images, points, vhs_gt in tqdm(data_loader, desc="Evaluating"):
@@ -33,12 +32,9 @@ def evaluate_model(model, data_loader, device, criterion):
             val_loss += loss.item() * images.size(0)
             val_correct += label_pred.eq(labels).sum().item()
 
-            # Collect results for later use
-            results.extend(zip(labels.cpu().numpy(), label_pred.cpu().numpy(), vhs_gt.cpu().numpy(), vhs_pred.cpu().numpy()))
-
     val_loss /= len(data_loader.dataset)
     val_acc = val_correct / len(data_loader.dataset)
-    return val_loss, val_acc, results
+    return val_loss, val_acc
 
 
 # Function to run inference on a test dataset and save predictions
