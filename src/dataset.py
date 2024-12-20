@@ -22,8 +22,10 @@ class DogHeartDataset(Dataset):
             img = self.transforms(img)
         mat = loadmat(points_path)
         six_points = torch.tensor(mat['six_points'], dtype=torch.float32)
-        VHS = torch.tensor(mat['VHS'], dtype=torch.float32).reshape([1])
-        return idx, img, six_points / h, VHS
+        six_points[:,0] = six_points[:,0] / w
+        six_points[:,1] = six_points[:,1] / h
+        VHS = torch.tensor(mat['VHS'], dtype=torch.float32)
+        return idx, img, six_points, VHS
 
     def __len__(self):
         return len(self.imgs)
@@ -44,3 +46,21 @@ class DogHeartTestDataset(Dataset):
 
     def __len__(self):
         return len(self.imgs)
+
+# Dataset for High Confidence Data
+class HighConfidenceDataset(Dataset):
+    def __init__(self, images, pseudo_labels):
+        self.images = images
+        self.pseudo_labels = pseudo_labels
+    
+    def __len__(self):
+        return len(self.images)
+    
+    def __getitem__(self, idx):
+        img = self.images[idx]
+        pseudo_label = self.pseudo_labels[idx]
+        pseudo_vhs = calc_vhs(pseudo_label.unsqueeze(0)).reshape([1,1]) # Add batch dimension for calc_vhs compatibility
+        idx_dummy = -1  # This is not used but added to keep compatibility
+        return idx_dummy, img, pseudo_label, pseudo_vhs
+    
+
