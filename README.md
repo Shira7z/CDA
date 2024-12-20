@@ -17,7 +17,7 @@ This repository provides the code and framework for detecting canine cardiomegal
 1. Clone the repository:
    ```bash
    git clone https://github.com/Shira7z/CDA.git
-   cd your-repo
+   cd CDA
    ```
 
 2. Install dependencies:
