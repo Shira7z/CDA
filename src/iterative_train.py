@@ -29,9 +29,12 @@ def train_with_pseudo_labels(
         scheduler.step()
 
         # Generate pseudo-labels
-        pseudo_labels, high_conf_idx = generate_pseudo_labels(model, unlabeled_loader, device)
+        high_conf_pseudo_labels, high_conf_idx = generate_pseudo_labels(model, unlabeled_loader, device)
         if len(high_conf_idx) > 0:
             high_conf_images = [unlabeled_loader.dataset[i][0] for i in high_conf_idx]
-            high_conf_dataset = HighConfidenceDataset(high_conf_images, pseudo_labels)
+            print(f"High confidence pseudo-labels count: {len(high_conf_idx)} (out of {len(unlabeled_loader.dataset)})")
+            high_conf_dataset = HighConfidenceDataset(high_conf_images, high_conf_pseudo_labels)
             combined_dataset = ConcatDataset([train_loader.dataset, high_conf_dataset])
             train_loader = DataLoader(combined_dataset, batch_size=train_loader.batch_size, shuffle=True)
+        else:
+            print("No high confidence pseudo-labels found.")
