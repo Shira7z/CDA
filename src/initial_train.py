@@ -23,13 +23,13 @@ def train_initial_model(train_loader, valid_loader, device, num_epochs=1000, lr=
             optimizer.zero_grad()
             outputs = model(images)
 
-            loss1 = criterion(outputs, points)
-            loss2 = criterion(calc_vhs(outputs), vhs)
+            loss1 = criterion(outputs.squeeze(), points.squeeze())
+            loss2 = criterion(calc_vhs(outputs).squeeze(), vhs.squeeze())
             loss = 10 * loss1 + 0.1 * loss2
 
             if epoch > 10:
                 soft_points = pred_record[ind].mean(axis=1).to(device)
-                loss3 = criterion(outputs, soft_points)
+                loss3 = criterion(outputs.squeeze(), soft_points)
                 loss += loss3
 
             loss.backward()
@@ -38,9 +38,10 @@ def train_initial_model(train_loader, valid_loader, device, num_epochs=1000, lr=
             pred_record[ind, epoch % 10] = outputs.detach().cpu()
 
         scheduler.step()
+        epoch_loss = running_loss / len(train_loader.dataset)
         val_loss, val_acc, _ = evaluate_model(model, valid_loader, device, criterion)
 
-        print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {running_loss:.4f}, Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
+        print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {epoch_loss:.4f}, Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
