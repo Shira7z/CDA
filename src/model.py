@@ -19,10 +19,17 @@ def get_model(device):
 
 # Function to calculate VHS from model outputs
 def calc_vhs(x: torch.Tensor):
-    A, B = x[..., :2], x[..., 2:4]
-    C, D = x[..., 4:6], x[..., 6:8]
-    E, F = x[..., 8:10], x[..., 10:12]
+    A = x[..., 0:2]
+    B = x[..., 2:4]
+    C = x[..., 4:6]
+    D = x[..., 6:8]
+    E = x[..., 8:10]
+    F = x[..., 10:12]
+    
     AB = torch.norm(A - B, p=2, dim=-1)
     CD = torch.norm(C - D, p=2, dim=-1)
     EF = torch.norm(E - F, p=2, dim=-1)
-    return 6 * (AB + CD) / EF
+    
+    vhs = 6 * (AB + CD) / EF
+    
+    return vhs
