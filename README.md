@@ -41,11 +41,9 @@ src/
 
 ## Usage
 
-1. Initial Training
-Train the model with labeled data to obtain the best initial model:
+1. Initial Training: Train the model with labeled data to obtain the best initial model.
 ```python
 from dataset import DogHeartDataset
-from model import get_model
 from torch.utils.data import DataLoader
 from initial_train import train_initial_model
 from utils import get_transform
@@ -59,14 +57,15 @@ valid_loader = DataLoader(valid_dataset, batch_size=8, shuffle=False)
 
 # Train the model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-train_initial_model(train_loader, valid_loader, device, num_epochs=100, lr=3e-4)
+train_initial_model(train_loader, valid_loader, device, num_epochs=1000, lr=3e-4)
 ```
 
-2. Iterative Training with Pseudo-Labeling
-Refine the model using unlabeled data:
+2. Iterative Training with Pseudo-Labeling: Refine the model using unlabeled data.
 ```python
 from dataset import DogHeartDataset, DogHeartTestDataset
+from torch.utils.data import DataLoader
 from iterative_train import train_with_pseudo_labels
+from utils import get_transform
 
 train_dataset = DogHeartDataset('path/to/train_dataset', transforms=get_transform(512))
 unlabeled_dataset = DogHeartTestDataset('path/to/unlabeled_dataset', transforms=get_transform(512))
@@ -76,8 +75,11 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 unlabeled_loader = DataLoader(unlabeled_dataset, batch_size=16, shuffle=False)
 valid_loader = DataLoader(valid_dataset, batch_size=8, shuffle=False)
 
+checkpoint_path = '/path/to/best_initial_model_checkpoint.pth'
+checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-train_with_pseudo_labels(train_loader, unlabeled_loader, valid_loader, device, num_epochs=50, lr=1e-5)
+train_with_pseudo_labels(train_loader, unlabeled_loader, valid_loader, checkpoint, device, num_epochs=100, lr=1e-5)
 ```
 
 
