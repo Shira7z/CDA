@@ -2,8 +2,7 @@ import torch
 from tqdm import tqdm
 import pandas as pd
 from model import calc_vhs
-from dataset import DogHeartTestDataset
-from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
 
 # Function to evaluate the model on a given dataset
 def evaluate_model(model, data_loader, device, criterion):
@@ -57,3 +56,88 @@ def inference_and_save(model, test_loader, device, output_path):
     df = pd.DataFrame({'ImageName': img_names, 'VHS': vhs_predictions})
     df.to_csv(output_path, index=False, header=True)
     print(f"Predictions saved to {output_path}")
+
+
+# Function to plot images with their predicted and true points (if applicable).
+def plot_predictions(model, data_loader, device):
+    model.eval()  
+    with torch.no_grad():
+        for data_batch in data_loader:
+            if len(data_batch) == 4:
+                _, images, points, vhs_gt = data_batch
+                batch_size = images.size(0)
+
+                images = images.to(device)
+                points = points.to(device)
+                vhs_gt = vhs_gt.to(device)
+                outputs = model(images)
+                vhs_pred = calc_vhs(outputs)                                  
+
+                images = images.permute(0, 2, 3, 1).cpu().numpy()
+                points = points.cpu().numpy()
+                outputs = outputs.cpu().numpy()                                                    
+                vhs_gt = vhs_gt.cpu().numpy()
+                vhs_pred = vhs_pred.cpu().numpy()
+
+                fig, axes = plt.subplots(1, batch_size, figsize=(4 * batch_size, 4))
+                if batch_size == 1:
+                    axes = [axes]   
+
+                for i, ax in enumerate(axes):
+                    img = images[i]
+                    img = (img - img.min()) / (img.max() - img.min())
+                    true_points = points[i].reshape(-1, 2) * img.shape[0]
+                    pred_points = outputs[i].reshape(-1, 2) * img.shape[0]
+                    true_vhs = vhs_gt[i].item()
+                    pred_vhs = vhs_pred[i].item()
+                    
+                    ax.imshow(img, cmap='gray')
+                    ax.axis('off')
+                    ax.scatter(true_points[:, 0], true_points[:, 1], c='blue', label='True Points')
+                    ax.plot(true_points[[0, 1], 0], true_points[[0, 1], 1], 'blue')
+                    ax.plot(true_points[[2, 3], 0], true_points[[2, 3], 1], 'blue')
+                    ax.plot(true_points[[4, 5], 0], true_points[[4, 5], 1], 'blue')
+                    ax.scatter(pred_points[:, 0], pred_points[:, 1], c='red', label='Prediction')
+                    ax.plot(pred_points[[0, 1], 0], pred_points[[0, 1], 1], 'red')
+                    ax.plot(pred_points[[2, 3], 0], pred_points[[2, 3], 1], 'red')
+                    ax.plot(pred_points[[4, 5], 0], pred_points[[4, 5], 1], 'red')
+                    ax.set_title(f"True: {true_vhs:.2f}, Pred: {pred_vhs:.2f}")
+                    ax.legend()
+              
+                plt.tight_layout()
+                plt.show()
+
+
+            if len(data_batch) == 2:
+                images, _ = data_batch
+                batch_size = images.size(0)
+
+                images = images.to(device)
+                outputs = model(images)
+                vhs_pred = calc_vhs(outputs)                                  
+
+                images = images.permute(0, 2, 3, 1).cpu().numpy()
+                outputs = outputs.cpu().numpy()   
+                vhs_pred = vhs_pred.cpu().numpy()
+
+                fig, axes = plt.subplots(1, batch_size, figsize=(4 * batch_size, 4))
+                if batch_size == 1:
+                    axes = [axes]   
+
+                for i, ax in enumerate(axes):
+                    img = images[i]
+                    img = (img - img.min()) / (img.max() - img.min())
+                    pred_points = outputs[i].reshape(-1, 2) * img.shape[0]
+                    pred_vhs = vhs_pred[i].item()
+
+                    ax.imshow(img, cmap='gray')
+                    ax.axis('off')
+                    ax.scatter(pred_points[:, 0], pred_points[:, 1], c='red', label='Prediction')
+                    ax.plot(pred_points[[0, 1], 0], pred_points[[0, 1], 1], 'red')
+                    ax.plot(pred_points[[2, 3], 0], pred_points[[2, 3], 1], 'red')
+                    ax.plot(pred_points[[4, 5], 0], pred_points[[4, 5], 1], 'red')
+                    ax.set_title(f"Predicted VHS: {pred_vhs:.2f}")
+                    ax.legend()
+              
+                plt.tight_layout()
+                plt.show()
