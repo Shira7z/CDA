@@ -148,4 +148,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 train_with_pseudo_labels(train_loader, unlabeled_loader, valid_loader, checkpoint, device, num_epochs=100, lr=1e-5)
 ```
 
+### Dataset
+2,000 Original Dataset: [Download](https://yuad-my.sharepoint.com/:f:/g/personal/youshan_zhang_yu_edu/ErguFJBE4y9KqzEdWWNlXzMBkTbsBaNX9l856SyvQauwJg?e=hp9bY7)
+
+3,000 Synthetic Dataset: [Download](https://drive.google.com/file/d/1qMUyOw4yl-ps7tzOQZJGDnatH_V2VfVI/view?usp=drive_link)
 
